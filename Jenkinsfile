@@ -47,7 +47,7 @@ pipeline {
                         // App check
                         sh "kubectl apply -k apps/overlays/staging/frontend --dry-run=server"
                         sh "kubectl apply -k apps/overlays/staging/frontend --dry-run=client"
-                        sh "kubectl diff -k apps/overlays/staging/frontend || [ $? -le 1 ]"
+                        sh 'kubectl diff -k apps/overlays/staging/frontend || [ $? -le 1 ]'
                     }
                 }
             }
