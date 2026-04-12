@@ -1,13 +1,10 @@
-# ---> AL
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
-
-# Local History for Visual Studio Code
-.history/
-*.app
-.snapshots/*
-
+bin/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+jenkins-kubeconfig.conf
+healthcare-frontend/

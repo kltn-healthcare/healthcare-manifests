@@ -1,0 +1,29 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: jenkins-deployer-role
+rules:
+  # Main resources: Allow Read, Create, and Update (No Delete)
+  - apiGroups: ["", "apps", "networking.k8s.io", "batch"]
+    resources: 
+      - "deployments"
+      - "services"
+      - "ingresses"
+      - "configmaps"
+      - "secrets"
+      - "pods"
+      - "statefulsets"
+      - "jobs"
+      - "cronjobs"
+      - "persistentvolumeclaims"
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+
+  # Metadata resources: Required for Kustomize and discovery
+  - apiGroups: [""]
+    resources: ["namespaces", "nodes"]
+    verbs: ["get", "list", "watch"]
+
+  # Required for --dry-run=server to validate permissions
+  - apiGroups: ["authorization.k8s.io"]
+    resources: ["selfsubjectaccessreviews", "selfsubjectrulesreviews"]
+    verbs: ["create"]
