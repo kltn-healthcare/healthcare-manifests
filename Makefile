@@ -44,18 +44,37 @@ check-tools:
 		mv kustomize bin/kustomize && chmod +x bin/kustomize; \
 	fi
 
-# 2. Check and Link Yamllint using pip3
+	# 2. Install Yamllint (venv-first)
 	@if [ ! -x bin/yamllint ]; then \
-		echo "Checking for yamllint in the system..."; \
+		echo "Preparing yamllint $(YAMLLINT_VERSION)..."; \
+		if python3 -m venv --help >/dev/null 2>&1; then \
+			rm -rf bin/.yamllint-venv; \
+			if python3 -m venv bin/.yamllint-venv; then \
+				if bin/.yamllint-venv/bin/pip install --no-cache-dir "yamllint==$(subst v,,$(YAMLLINT_VERSION))"; then \
+					printf '%s\n' '#!/usr/bin/env sh' > bin/yamllint; \
+					printf '%s\n' 'set -eu' >> bin/yamllint; \
+					printf '%s\n' 'SCRIPT_DIR=$$(CDPATH= cd -- "$$(dirname -- "$$0")" && pwd)' >> bin/yamllint; \
+					printf '%s\n' 'exec "$$SCRIPT_DIR/.yamllint-venv/bin/yamllint" "$$@"' >> bin/yamllint; \
+					chmod +x bin/yamllint; \
+					echo "Installed yamllint in virtualenv"; \
+					exit 0; \
+				fi; \
+			fi; \
+			echo "WARNING: venv-based yamllint install failed, trying fallback..."; \
+		fi; \
 		if command -v yamllint >/dev/null 2>&1; then \
-			ln -sf $$(command -v yamllint) bin/yamllint; \
+			ln -sf "$$(command -v yamllint)" bin/yamllint; \
 			echo "Linked system yamllint to bin/"; \
 		else \
-			echo "yamllint not found. Attempting install via python3 -m pip..."; \
-			python3 -m pip install --user --upgrade yamllint==$(YAMLLINT_VERSION); \
-			Y_PATH=$$(find $(HOME)/.local -name yamllint -type f 2>/dev/null | head -n1); \
-			if [ -n "$$Y_PATH" ]; then \
-				ln -sf $$Y_PATH bin/yamllint; \
+			echo "yamllint not found. Installing via python3 -m pip --user..."; \
+			if ! python3 -m pip install --user --upgrade --break-system-packages yamllint==$(subst v,,$(YAMLLINT_VERSION)); then \
+				echo "ERROR: Failed to install yamllint with pip (PEP 668 or network issue)."; \
+				exit 1; \
+			fi; \
+			USER_BIN=$$(python3 -c 'import site; print(site.USER_BASE)')/bin; \
+			Y_PATH="$$USER_BIN/yamllint"; \
+			if [ -x "$$Y_PATH" ]; then \
+				ln -sf "$$Y_PATH" bin/yamllint; \
 				echo "Successfully installed and linked yamllint!"; \
 			else \
 				echo "ERROR: pip3 installed nothing or path is wrong."; \

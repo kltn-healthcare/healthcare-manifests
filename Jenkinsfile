@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // This ensures the pipeline prioritizes the tools we just installed in ./bin
-        PATH = "${WORKSPACE}/bin:${env.PATH}"
+        PATH = "${WORKSPACE}/bin:${WORKSPACE}/bin/.yamllint-venv/bin:${env.PATH}"
     }
 
     stages {
