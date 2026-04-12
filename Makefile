@@ -23,6 +23,15 @@ else
     ARCH_FIXED := $(ARCH)
 endif
 
+# Kube-linter uses no arch suffix for amd64 and _arm64 for arm64.
+ifeq ($(ARCH_FIXED),amd64)
+	KUBELINTER_ARCH_SUFFIX :=
+else ifeq ($(ARCH_FIXED),arm64)
+	KUBELINTER_ARCH_SUFFIX := _arm64
+else
+	KUBELINTER_ARCH_SUFFIX := _$(ARCH_FIXED)
+endif
+
 .PHONY: check-tools lint update-tag push
 
 check-tools:
@@ -47,10 +56,24 @@ check-tools:
 	@if [ ! -x bin/kube-linter ]; then \
 		echo "Installing kube-linter $(KUBELINTER_VERSION)..."; \
 		TMP_DIR=$$(mktemp -d); \
-		ASSET_URL="https://github.com/stackrox/kube-linter/releases/download/$(KUBELINTER_VERSION)/kube-linter-$(OS)-$(ARCH_FIXED).tar.gz"; \
-		curl -fsSL "$$ASSET_URL" -o "$$TMP_DIR/kube-linter.tar.gz" || (echo "Failed to download kube-linter" && exit 1); \
-		tar -xzf "$$TMP_DIR/kube-linter.tar.gz" -C "$$TMP_DIR"; \
-		mv "$$TMP_DIR/kube-linter" bin/kube-linter; \
+		ASSET_URL="https://github.com/stackrox/kube-linter/releases/download/$(KUBELINTER_VERSION)/kube-linter-$(OS)$(KUBELINTER_ARCH_SUFFIX).tar.gz"; \
+		if ! curl -fsSL "$$ASSET_URL" -o "$$TMP_DIR/kube-linter.tar.gz"; then \
+			echo "Failed to download kube-linter from $$ASSET_URL"; \
+			rm -rf "$$TMP_DIR"; \
+			exit 1; \
+		fi; \
+		if ! tar -xzf "$$TMP_DIR/kube-linter.tar.gz" -C "$$TMP_DIR"; then \
+			echo "Failed to extract kube-linter archive"; \
+			rm -rf "$$TMP_DIR"; \
+			exit 1; \
+		fi; \
+		BIN_PATH=$$(find "$$TMP_DIR" -type f -name kube-linter | head -n1); \
+		if [ -z "$$BIN_PATH" ]; then \
+			echo "kube-linter binary not found in archive"; \
+			rm -rf "$$TMP_DIR"; \
+			exit 1; \
+		fi; \
+		mv "$$BIN_PATH" bin/kube-linter; \
 		chmod +x bin/kube-linter; \
 		rm -rf "$$TMP_DIR"; \
 	fi
