@@ -25,8 +25,8 @@ pipeline {
                 script {
                     echo "Scanning for YAML syntax and security issues..."
                     // We call them directly from bin/ to be 100% sure we use the pinned versions
-                    sh "bin/yamllint apps/ infrastructure/"
-                    sh "bin/kube-linter lint apps/ infrastructure/"
+                    sh "yamllint apps/ infrastructure/"
+                    sh "kube-linter lint apps/ infrastructure/"
                 }
             }
         }
