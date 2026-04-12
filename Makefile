@@ -23,7 +23,7 @@ else
     ARCH_FIXED := $(ARCH)
 endif
 
-# Kube-linter uses no arch suffix for amd64 and _arm64 for arm64.
+# Kube-linter naming convention
 ifeq ($(ARCH_FIXED),amd64)
     KUBELINTER_ARCH_SUFFIX :=
 else ifeq ($(ARCH_FIXED),arm64)
@@ -37,41 +37,40 @@ endif
 check-tools:
 	@mkdir -p bin
 	
-	# Install Kustomize (Pinned Version)
+	# 1. Install Kustomize (Pinned Binary)
 	@if [ ! -x bin/kustomize ]; then \
 		echo "Installing kustomize $(KUSTOMIZE_VERSION)..."; \
 		curl -sSL "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) >/dev/null 2>&1; \
 		mv kustomize bin/kustomize && chmod +x bin/kustomize; \
 	fi
 
-	# Install Yamllint (No Sudo - using pip)
+	# 2. Check and Link Yamllint using pip3
 	@if [ ! -x bin/yamllint ]; then \
-		echo "Installing yamllint $(YAMLLINT_VERSION)..."; \
+		echo "Checking for yamllint in the system..."; \
 		if command -v yamllint >/dev/null 2>&1; then \
-			ln -sf "$$(command -v yamllint)" bin/yamllint; \
+			ln -sf $$(command -v yamllint) bin/yamllint; \
+			echo "Linked system yamllint to bin/"; \
 		else \
-			python3 -m pip install --user yamllint==$(YAMLLINT_VERSION) >/dev/null 2>&1 || pip install --user yamllint==$(YAMLLINT_VERSION) >/dev/null 2>&1; \
-			if [ -f "$$HOME/.local/bin/yamllint" ]; then \
-				ln -sf "$$HOME/.local/bin/yamllint" bin/yamllint; \
+			echo "yamllint not found. Installing via pip3..."; \
+			pip3 install --user yamllint==$(YAMLLINT_VERSION) >/dev/null 2>&1; \
+			Y_PATH=$$(find $(HOME)/.local -name yamllint -type f 2>/dev/null | head -n1); \
+			if [ -n "$$Y_PATH" ]; then \
+				ln -sf $$Y_PATH bin/yamllint; \
+				echo "Installed and linked yamllint to bin/"; \
 			else \
-				echo "Searching for yamllint binary..."; \
-				YAMLLINT_PATH=$$(find $$HOME/.local -name yamllint -type f | head -n1); \
-				if [ -n "$$YAMLLINT_PATH" ]; then ln -sf "$$YAMLLINT_PATH" bin/yamllint; \
-				else echo "Warning: yamllint not found. Ensure pip is installed."; exit 1; fi; \
+				echo "Error: Failed to install yamllint. Please check pip3 installation."; \
+				exit 1; \
 			fi; \
 		fi; \
 	fi
 
-	# Install Kube-linter (Pinned Version v0.8.3)
+	# 3. Install Kube-linter (Pinned Binary)
 	@if [ ! -x bin/kube-linter ]; then \
 		echo "Installing kube-linter $(KUBELINTER_VERSION)..."; \
 		TMP_DIR=$$(mktemp -d); \
 		ASSET_URL="https://github.com/stackrox/kube-linter/releases/download/$(KUBELINTER_VERSION)/kube-linter-$(OS)$(KUBELINTER_ARCH_SUFFIX).tar.gz"; \
-		if ! curl -fsSL "$$ASSET_URL" -o "$$TMP_DIR/kube-linter.tar.gz"; then \
-			echo "Failed to download kube-linter from $$ASSET_URL"; \
-			rm -rf "$$TMP_DIR"; exit 1; \
-		fi; \
-		tar -xzf "$$TMP_DIR/kube-linter.tar.gz" -C "$$TMP_DIR"; \
+		curl -fsSL "$$ASSET_URL" -o "$$TMP_DIR/kube-linter.tar.gz" && \
+		tar -xzf "$$TMP_DIR/kube-linter.tar.gz" -C "$$TMP_DIR" && \
 		mv "$$TMP_DIR/kube-linter" bin/kube-linter && chmod +x bin/kube-linter; \
 		rm -rf "$$TMP_DIR"; \
 	fi
