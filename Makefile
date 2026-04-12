@@ -48,8 +48,26 @@ check-tools:
 	# Install Yamllint (Pinned Version)
 	@if [ ! -x bin/yamllint ]; then \
 		echo "Installing yamllint $(YAMLLINT_VERSION)..."; \
-		curl -sSL "https://github.com/adrienverge/yamllint/releases/download/$(YAMLLINT_VERSION)/yamllint" -o bin/yamllint; \
-		chmod +x bin/yamllint; \
+		if command -v yamllint >/dev/null 2>&1; then \
+			ln -sf "$$(command -v yamllint)" bin/yamllint; \
+		else \
+			SUDO_CMD=""; \
+			if [ "$$(id -u)" -ne 0 ]; then \
+				if command -v sudo >/dev/null 2>&1; then \
+					SUDO_CMD="sudo -n"; \
+				else \
+					echo "yamllint is missing and sudo is not available to install it"; \
+					exit 1; \
+				fi; \
+			fi; \
+			if ! command -v apt-get >/dev/null 2>&1; then \
+				echo "yamllint is missing and apt-get is not available"; \
+				exit 1; \
+			fi; \
+			$$SUDO_CMD apt-get update -y >/dev/null; \
+			$$SUDO_CMD apt-get install -y yamllint >/dev/null; \
+			ln -sf "$$(command -v yamllint)" bin/yamllint; \
+		fi; \
 	fi
 
 	# Install Kube-linter (Pinned Version v0.8.3)
