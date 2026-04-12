@@ -44,21 +44,24 @@ check-tools:
 		mv kustomize bin/kustomize && chmod +x bin/kustomize; \
 	fi
 
-	# 2. Check and Link Yamllint using pip3
+# 2. Check and Link Yamllint using pip3
 	@if [ ! -x bin/yamllint ]; then \
 		echo "Checking for yamllint in the system..."; \
 		if command -v yamllint >/dev/null 2>&1; then \
 			ln -sf $$(command -v yamllint) bin/yamllint; \
 			echo "Linked system yamllint to bin/"; \
 		else \
-			echo "yamllint not found. Installing via pip3..."; \
-			pip3 install --user yamllint==$(YAMLLINT_VERSION) >/dev/null 2>&1; \
+			echo "yamllint not found. Attempting install via python3 -m pip..."; \
+			python3 -m pip install --user --upgrade yamllint==$(YAMLLINT_VERSION); \
 			Y_PATH=$$(find $(HOME)/.local -name yamllint -type f 2>/dev/null | head -n1); \
 			if [ -n "$$Y_PATH" ]; then \
 				ln -sf $$Y_PATH bin/yamllint; \
-				echo "Installed and linked yamllint to bin/"; \
+				echo "Successfully installed and linked yamllint!"; \
 			else \
-				echo "Error: Failed to install yamllint. Please check pip3 installation."; \
+				echo "ERROR: pip3 installed nothing or path is wrong."; \
+				echo "Current PATH: $(PATH)"; \
+				echo "Checking if pip3 is even available:"; \
+				python3 -m pip --version || echo "pip3 is NOT installed properly for jenkins user."; \
 				exit 1; \
 			fi; \
 		fi; \
