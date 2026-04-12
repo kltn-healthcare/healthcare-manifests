@@ -36,7 +36,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'k8s-kubeconfig', variable: 'KUBE_CONFIG_PATH')]) {
                     script {
                         // CRITICAL: You must set this variable so kubectl knows which cluster to talk to
-                        // env.KUBECONFIG = KUBE_CONFIG_PATH
+                        env.KUBECONFIG = KUBE_CONFIG_PATH
                         
                         // echo "Validating Infrastructure Components..."
                         // // Foundation check
