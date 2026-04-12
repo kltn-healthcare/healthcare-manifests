@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Add bin folder to PATH to use tools from Makefile
+        // This ensures the pipeline prioritizes the tools we just installed in ./bin
         PATH = "${WORKSPACE}/bin:${env.PATH}"
     }
 
@@ -15,16 +15,19 @@ pipeline {
 
         stage('Install Tools') {
             steps {
-                // Just run the Makefile target to get everything ready
+                // This triggers the Makefile to download Kustomize, Kube-linter, and Yamllint
                 sh "make check-tools"
             }
         }
 
         stage('Lint Check') {
             steps {
-                echo "Scanning for YAML syntax and security issues..."
-                sh "yamllint apps/ infrastructure/"
-                sh "kube-linter lint apps/ infrastructure/"
+                script {
+                    echo "Scanning for YAML syntax and security issues..."
+                    // We call them directly from bin/ to be 100% sure we use the pinned versions
+                    sh "bin/yamllint apps/ infrastructure/"
+                    sh "bin/kube-linter lint apps/ infrastructure/"
+                }
             }
         }
 
@@ -32,20 +35,17 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'k8s-kubeconfig', variable: 'KUBE_CONFIG_PATH')]) {
                     script {
-                        // env.KUBECONFIG = KUBE_CONFIG_PATH
+                        // CRITICAL: You must set this variable so kubectl knows which cluster to talk to
+                        env.KUBECONFIG = KUBE_CONFIG_PATH
                         
-                        // echo "Validating Infrastructure..."
-                        // // We check core infra because they are the foundation
-                        // sh "kubectl apply -k infrastructure/argocd --dry-run=server"
-                        // sh "kubectl apply -k infrastructure/metallb --dry-run=server"
+                        echo "Validating Infrastructure Components..."
+                        // Foundation check
+                        sh "kubectl apply -k infrastructure/argocd --dry-run=server"
+                        sh "kubectl apply -k infrastructure/metallb --dry-run=server"
 
                         echo "Validating Application Overlays..."
-                        // For apps, we only check staging for now to keep it simple
-                        sh "kubectl apply -k apps/overlays/staging/frontend --dry-run=client"
+                        // App check
                         sh "kubectl apply -k apps/overlays/staging/frontend --dry-run=server"
-                        
-                        // Tip: If you add more services later, just add more 'sh' lines here
-                        // Or a simple loop if you're feeling fancy.
                     }
                 }
             }
@@ -56,6 +56,12 @@ pipeline {
         always {
             echo "Cleaning up workspace..."
             cleanWs()
+        }
+        success {
+            echo "Manifests validated successfully!"
+        }
+        failure {
+            echo "Validation failed. Please check the logs."
         }
     }
 }
