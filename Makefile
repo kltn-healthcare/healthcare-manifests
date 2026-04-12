@@ -25,11 +25,11 @@ endif
 
 # Kube-linter uses no arch suffix for amd64 and _arm64 for arm64.
 ifeq ($(ARCH_FIXED),amd64)
-	KUBELINTER_ARCH_SUFFIX :=
+    KUBELINTER_ARCH_SUFFIX :=
 else ifeq ($(ARCH_FIXED),arm64)
-	KUBELINTER_ARCH_SUFFIX := _arm64
+    KUBELINTER_ARCH_SUFFIX := _arm64
 else
-	KUBELINTER_ARCH_SUFFIX := _$(ARCH_FIXED)
+    KUBELINTER_ARCH_SUFFIX := _$(ARCH_FIXED)
 endif
 
 .PHONY: check-tools lint update-tag push
@@ -41,32 +41,24 @@ check-tools:
 	@if [ ! -x bin/kustomize ]; then \
 		echo "Installing kustomize $(KUSTOMIZE_VERSION)..."; \
 		curl -sSL "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) >/dev/null 2>&1; \
-		mv kustomize bin/kustomize; \
-		chmod +x bin/kustomize; \
+		mv kustomize bin/kustomize && chmod +x bin/kustomize; \
 	fi
 
-	# Install Yamllint (Pinned Version)
+	# Install Yamllint (No Sudo - using pip)
 	@if [ ! -x bin/yamllint ]; then \
 		echo "Installing yamllint $(YAMLLINT_VERSION)..."; \
 		if command -v yamllint >/dev/null 2>&1; then \
 			ln -sf "$$(command -v yamllint)" bin/yamllint; \
 		else \
-			SUDO_CMD=""; \
-			if [ "$$(id -u)" -ne 0 ]; then \
-				if command -v sudo >/dev/null 2>&1; then \
-					SUDO_CMD="sudo -n"; \
-				else \
-					echo "yamllint is missing and sudo is not available to install it"; \
-					exit 1; \
-				fi; \
+			python3 -m pip install --user yamllint==$(YAMLLINT_VERSION) >/dev/null 2>&1 || pip install --user yamllint==$(YAMLLINT_VERSION) >/dev/null 2>&1; \
+			if [ -f "$$HOME/.local/bin/yamllint" ]; then \
+				ln -sf "$$HOME/.local/bin/yamllint" bin/yamllint; \
+			else \
+				echo "Searching for yamllint binary..."; \
+				YAMLLINT_PATH=$$(find $$HOME/.local -name yamllint -type f | head -n1); \
+				if [ -n "$$YAMLLINT_PATH" ]; then ln -sf "$$YAMLLINT_PATH" bin/yamllint; \
+				else echo "Warning: yamllint not found. Ensure pip is installed."; exit 1; fi; \
 			fi; \
-			if ! command -v apt-get >/dev/null 2>&1; then \
-				echo "yamllint is missing and apt-get is not available"; \
-				exit 1; \
-			fi; \
-			$$SUDO_CMD apt-get update -y >/dev/null; \
-			$$SUDO_CMD apt-get install -y yamllint >/dev/null; \
-			ln -sf "$$(command -v yamllint)" bin/yamllint; \
 		fi; \
 	fi
 
@@ -77,33 +69,21 @@ check-tools:
 		ASSET_URL="https://github.com/stackrox/kube-linter/releases/download/$(KUBELINTER_VERSION)/kube-linter-$(OS)$(KUBELINTER_ARCH_SUFFIX).tar.gz"; \
 		if ! curl -fsSL "$$ASSET_URL" -o "$$TMP_DIR/kube-linter.tar.gz"; then \
 			echo "Failed to download kube-linter from $$ASSET_URL"; \
-			rm -rf "$$TMP_DIR"; \
-			exit 1; \
+			rm -rf "$$TMP_DIR"; exit 1; \
 		fi; \
-		if ! tar -xzf "$$TMP_DIR/kube-linter.tar.gz" -C "$$TMP_DIR"; then \
-			echo "Failed to extract kube-linter archive"; \
-			rm -rf "$$TMP_DIR"; \
-			exit 1; \
-		fi; \
-		BIN_PATH=$$(find "$$TMP_DIR" -type f -name kube-linter | head -n1); \
-		if [ -z "$$BIN_PATH" ]; then \
-			echo "kube-linter binary not found in archive"; \
-			rm -rf "$$TMP_DIR"; \
-			exit 1; \
-		fi; \
-		mv "$$BIN_PATH" bin/kube-linter; \
-		chmod +x bin/kube-linter; \
+		tar -xzf "$$TMP_DIR/kube-linter.tar.gz" -C "$$TMP_DIR"; \
+		mv "$$TMP_DIR/kube-linter" bin/kube-linter && chmod +x bin/kube-linter; \
 		rm -rf "$$TMP_DIR"; \
 	fi
 
 lint: check-tools
 	@echo "Running linting tools..."
-	@yamllint apps/ infrastructure/
-	@kube-linter lint apps/ infrastructure/
+	@bin/yamllint apps/ infrastructure/
+	@bin/kube-linter lint apps/ infrastructure/
 
 update-tag: check-tools
 	@echo "Updating kustomize image tag to $(TAG)..."
-	@cd apps/overlays/$(ENV)/$(SERVICE) && kustomize edit set image $(SERVICE)=$(REGISTRY)/$(SERVICE):$(TAG)
+	@cd apps/overlays/$(ENV)/$(SERVICE) && ../../../../bin/kustomize edit set image $(SERVICE)=$(REGISTRY)/$(SERVICE):$(TAG)
 
 push:
 	@echo "Pushing manifest changes to Git..."
