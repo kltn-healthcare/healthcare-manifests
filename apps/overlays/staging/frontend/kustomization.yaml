@@ -7,13 +7,13 @@ resources:
 
 # Add prefix to resources for environment isolation
 namePrefix: staging-
+namespace: staging
 
-# Apply the LoadBalancer patch
-patches:
-  - path: service-patch.yaml
-
-# Dynamic image tag update from Gitea/Jenkins
 images:
   - name: gitea.kltn.internal/kltn/healthcare-frontend
     newName: gitea.kltn.internal:80/kltn/healthcare-frontend
     newTag: "11"
+
+# Apply the patches
+patches:
+  - path: service-patch.yaml
