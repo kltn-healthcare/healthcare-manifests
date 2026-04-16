@@ -17,6 +17,3 @@ spec:
         image: gitea.kltn.internal/kltn/healthcare-frontend:latest
         ports:
         - containerPort: 3000
-      # Quan trọng: Thêm secret để K8s có quyền pull từ Gitea
-      imagePullSecrets:
-      - name: gitea-registry-secret
