@@ -10,7 +10,7 @@ namespace: production
 images:
   - name: gitea.kltn.internal:80/kltn/healthcare-frontend
     newName: gitea.kltn.internal:80/kltn/healthcare-frontend
-    newTag: "0.0.0"
+    newTag: "v0.0.4"
 
 patches:
   - path: service-patch.yaml
