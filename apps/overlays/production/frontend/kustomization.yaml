@@ -8,7 +8,7 @@ namePrefix: production-
 namespace: production
 
 images:
-  - name: gitea.kltn.internal:80/kltn/healthcare-frontend
+  - name: gitea.kltn.internal/kltn/healthcare-frontend
     newName: gitea.kltn.internal:80/kltn/healthcare-frontend
     newTag: "v0.0.4"
 
