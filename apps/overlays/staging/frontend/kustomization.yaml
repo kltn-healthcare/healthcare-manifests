@@ -17,3 +17,4 @@ images:
 # Apply the patches
 patches:
   - path: service-patch.yaml
+  - path: replica-patch.yaml
