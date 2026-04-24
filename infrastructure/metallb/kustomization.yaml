@@ -1,10 +1,20 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
+# 1. Include your custom IP pool configuration
 resources:
   - ipaddresspool.yaml
+
+# 2. Instruct Kustomize to pull and inflate Helm charts dynamically
 helmCharts:
+  # --- MetalLB Configuration ---
   - name: metallb
     repo: https://metallb.github.io/metallb
-    version: 0.14.8
+    version: 0.15.3 # Updated exactly to your running version
     releaseName: metallb
     namespace: metallb-system
+    includeCRDs: true
+    valuesInline:
+      controller:
+        logLevel: info
+
