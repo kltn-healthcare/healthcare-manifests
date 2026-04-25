@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Include the custom Gateway resource
+resources:
+  - gateway.yaml
+
+# Instruct Kustomize to pull and inflate the Envoy Gateway Helm chart
+helmCharts:
+  - name: gateway-helm
+    repo: oci://docker.io/envoyproxy
+    version: v1.6.6
+    releaseName: eg # Keep 'eg' to maintain consistency with official docs
+    namespace: envoy-gateway-system
+    includeCRDs: true
+    valuesInline:
+      # Configure resource limits for the Envoy Gateway controller
+      deployment:
+        envoyGateway:
+          resources:
+            limits:
+              cpu: 700m
+              memory: 256Mi

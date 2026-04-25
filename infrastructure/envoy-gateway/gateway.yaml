@@ -1,0 +1,16 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: eg # Default gateway name
+  namespace: default
+spec:
+  # Reference the GatewayClass created by the Helm chart
+  gatewayClassName: eg
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      # Allow HTTPRoutes from all namespaces to attach to this listener
+      allowedRoutes:
+        namespaces:
+          from: All
