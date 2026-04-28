@@ -1,0 +1,29 @@
+# Deployment for shared Redis cache
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthcare-redis
+  namespace: healthcare
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthcare-redis
+  template:
+    metadata:
+      labels:
+        app: healthcare-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - name: redis
+              containerPort: 6379
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
