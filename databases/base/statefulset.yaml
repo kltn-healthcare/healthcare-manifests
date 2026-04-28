@@ -70,6 +70,7 @@ spec:
     - metadata:
         name: data
       spec:
+        storageClassName: longhorn
         accessModes:
           - ReadWriteOnce
         resources:
