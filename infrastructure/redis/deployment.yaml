@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: healthcare-redis
-  namespace: healthcare
+  namespace: healthcare-db
 spec:
   replicas: 1
   selector:

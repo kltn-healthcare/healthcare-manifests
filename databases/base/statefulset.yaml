@@ -2,18 +2,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: auth-db
-  namespace: healthcare
+  name: postgres
 spec:
-  serviceName: auth-db
+  serviceName: postgres
   replicas: 1
   selector:
     matchLabels:
-      app: auth-db
+      app: postgres
   template:
     metadata:
       labels:
-        app: auth-db
+        app: postgres
     spec:
       containers:
         - name: postgres
@@ -25,17 +24,17 @@ spec:
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: auth-db-secret
+                  name: db-secret
                   key: POSTGRES_DB
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: auth-db-secret
+                  name: db-secret
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: auth-db-secret
+                  name: db-secret
                   key: POSTGRES_PASSWORD
           resources:
             requests:
