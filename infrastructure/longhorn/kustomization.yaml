@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Đảm bảo dùng đúng namespace như lệnh mặc định
+namespace: longhorn-system
+
+helmCharts:
+  - name: longhorn
+    repo: https://charts.longhorn.io
+    version: 1.11.1
+    # Trùng khớp hoàn toàn với lệnh 'helm install longhorn'
+    releaseName: longhorn 
+    valuesInline:
+      # Tắt Job kiểm tra pre-upgrade để tránh bị treo trên ArgoCD
+      preUpgradeChecker:
+        jobEnabled: false
+      # Giữ nguyên các giá trị mặc định khác
+      persistence:
+        defaultClassReplicaCount: 3
+
+resources:
+  - namespace.yaml
