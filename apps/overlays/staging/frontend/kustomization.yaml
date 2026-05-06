@@ -4,9 +4,6 @@ kind: Kustomization
 # Reference the base manifests
 resources:
   - ../../../base/frontend
-
-# Add prefix to resources for environment isolation
-namePrefix: staging-
 namespace: staging
 
 images:

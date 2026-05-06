@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-service
+  name: healthcare-auth
   labels:
-    app: auth-service
+    app: healthcare-auth
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth-service
+      app: healthcare-auth
   template:
     metadata:
       labels:
-        app: auth-service
+        app: healthcare-auth
     spec:
       containers:
         - name: auth-service
-          image: your-registry/auth-service:latest
+          image: gitea.kltn.internal/kltn/healthcare-auth:latest
           ports:
-            - containerPort: 80
+            - containerPort: 3001
