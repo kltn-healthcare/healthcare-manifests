@@ -17,3 +17,5 @@ spec:
           image: gitea.kltn.internal/kltn/healthcare-admin:latest
           ports:
             - containerPort: 3002
+      imagePullSecrets:
+        - name: gitea-registry-secret
