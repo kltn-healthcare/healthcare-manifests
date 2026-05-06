@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthcare-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthcare-backend
+  template:
+    metadata:
+      labels:
+        app: healthcare-backend
+    spec:
+      containers:
+        - name: healthcare-backend
+          image: gitea.kltn.internal/kltn/healthcare-backend:latest
+          ports:
+            - containerPort: 8080
+      imagePullSecrets:
+        - name: gitea-registry-secret

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthcare-admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthcare-admin
+  template:
+    metadata:
+      labels:
+        app: healthcare-admin
+    spec:
+      containers:
+        - name: healthcare-admin
+          image: gitea.kltn.internal/kltn/healthcare-admin:latest
+          ports:
+            - containerPort: 3002
+      imagePullSecrets:
+        - name: gitea-registry-secret
