@@ -6,7 +6,17 @@ metadata:
 spec:
   parentRefs:
     - name: eg
+      namespace: default 
+      group: gateway.networking.k8s.io
+      kind: Gateway
   rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /staging
+      backendRefs:
+        - name: healthcare-frontend
+          port: 80
     - matches:
         - path:
             type: PathPrefix
