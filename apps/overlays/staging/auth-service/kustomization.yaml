@@ -4,6 +4,5 @@ resources:
   - ../../../base/auth-service
 namespace: staging
 images:
-  - name: gitea.kltn.internal/kltn/healthcare-auth
-    newName: gitea.kltn.internal:80/kltn/healthcare-auth
+  - name: gitea.kltn.internal:80/kltn/healthcare-auth
     newTag: "060880cd"

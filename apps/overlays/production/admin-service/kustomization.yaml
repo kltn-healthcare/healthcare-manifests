@@ -4,6 +4,5 @@ resources:
   - ../../../base/admin-service
 namespace: production
 images:
-  - name: gitea.kltn.internal/kltn/healthcare-admin
-    newName: gitea.kltn.internal:80/kltn/healthcare-admin
+  - name: gitea.kltn.internal:80/kltn/healthcare-admin
     newTag: "latest"

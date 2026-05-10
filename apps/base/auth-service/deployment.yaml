@@ -16,6 +16,8 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: gitea.kltn.internal/kltn/healthcare-auth:latest
+          image: gitea.kltn.internal:80/kltn/healthcare-auth:latest
           ports:
             - containerPort: 3001
+      imagePullSecrets:
+        - name: gitea-registry-secret
