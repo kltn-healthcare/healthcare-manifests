@@ -4,6 +4,5 @@ resources:
   - ../../../base/backend-service
 namespace: staging
 images:
-  - name: gitea.kltn.internal/kltn/healthcare-backend
-    newName: gitea.kltn.internal:80/kltn/healthcare-backend
+  - name: gitea.kltn.internal:80/kltn/healthcare-backend
     newTag: "060880cd"

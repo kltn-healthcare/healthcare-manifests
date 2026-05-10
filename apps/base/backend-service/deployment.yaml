@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: healthcare-backend
-          image: gitea.kltn.internal/kltn/healthcare-backend:latest
+          image: gitea.kltn.internal:80/kltn/healthcare-backend:latest
           ports:
             - containerPort: 8080
       imagePullSecrets:
