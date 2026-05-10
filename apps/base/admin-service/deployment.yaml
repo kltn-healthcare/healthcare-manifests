@@ -17,5 +17,8 @@ spec:
           image: gitea.kltn.internal:80/kltn/healthcare-admin:latest
           ports:
             - containerPort: 3002
+          envFrom:
+            - secretRef:
+                name: healthcare-app-secret
       imagePullSecrets:
         - name: gitea-registry-secret

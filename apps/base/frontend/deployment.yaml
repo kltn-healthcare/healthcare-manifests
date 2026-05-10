@@ -13,9 +13,12 @@ spec:
         app: healthcare-frontend
     spec:
       containers:
-      - name: healthcare-frontend
-        image: gitea.kltn.internal/kltn/healthcare-frontend:latest
-        ports:
-        - containerPort: 3000
+        - name: healthcare-frontend
+          image: gitea.kltn.internal/kltn/healthcare-frontend:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: healthcare-app-secret
       imagePullSecrets:
-      - name: gitea-registry-secret
+        - name: gitea-registry-secret
