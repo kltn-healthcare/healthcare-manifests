@@ -6,7 +6,7 @@ spec:
   selector:
     app: healthcare-frontend
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 3000
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
   type: ClusterIP

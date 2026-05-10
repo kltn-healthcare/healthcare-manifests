@@ -16,7 +16,7 @@ spec:
         - name: healthcare-frontend
           image: gitea.kltn.internal/kltn/healthcare-frontend:latest
           ports:
-            - containerPort: 3000
+            - containerPort: 8080
           envFrom:
             - secretRef:
                 name: healthcare-app-secret
