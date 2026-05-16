@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: healthcare-apps-staging
+  namespace: argocd # Đặt vào namespace argocd để bộ điều khiển ArgoCD quản lý
+spec:
+  project: default
+  source:
+    repoURL: 'http://gitea.kltn.internal/KLTN/healthcare-manifests.git' # Khớp chính xác với URL Gitea trong terminal của bạn
+    targetRevision: main # Theo dõi nhánh chính (main) trên Git
+    path: apps/overlays/staging # Trỏ thẳng vào thư mục gốc của overlay staging
+  destination:
+    server: 'https://kubernetes.default.svc' # Triển khai trực tiếp lên cụm K8s hiện tại
+    namespace: staging # Ép toàn bộ tài nguyên chạy vào namespace staging
+  syncPolicy:
+    automated:
+      prune: true # Tự động xóa tài nguyên dưới K8s nếu trên Git bị xóa
+      selfHeal: true # Tự động sửa lại nếu ai đó sửa tay dưới cụm K8s (giữ tính đồng bộ với Git)
+    syncOptions:
+      - ServerSideApply=true # Khuyên dùng cho Kustomize để tránh lỗi đồng bộ các tài nguyên lớn
