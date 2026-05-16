@@ -17,4 +17,4 @@ spec:
       prune: true # Tự động xóa tài nguyên dưới K8s nếu trên Git bị xóa
       selfHeal: true # Tự động sửa lại nếu ai đó sửa tay dưới cụm K8s (giữ tính đồng bộ với Git)
     syncOptions:
-      - ServerSideApply=true # Khuyên dùng cho Kustomize để tránh lỗi đồng bộ các tài nguyên lớn
+      - ServerSideApply=true 
