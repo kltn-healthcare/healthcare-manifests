@@ -20,4 +20,8 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    createNamespace: true
+    syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+          - SkipSchemaValidation=true
+          - Replace=true
