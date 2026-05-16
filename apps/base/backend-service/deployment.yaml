@@ -19,6 +19,6 @@ spec:
             - containerPort: 8080
           envFrom:
             - secretRef:
-                name: healthcare-app-secret
+                name: app-secret
       imagePullSecrets:
         - name: gitea-registry-secret
