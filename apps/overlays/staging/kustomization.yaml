@@ -6,4 +6,33 @@ resources:
   - auth-service
   - backend-service
   - frontend
-  - patient-service
+
+patches:
+  - target:
+      kind: Deployment
+      name: healthcare-admin
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
+        value: healthcare-global-secret-dev
+  - target:
+      kind: Deployment
+      name: healthcare-auth
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
+        value: healthcare-global-secret-dev
+  - target:
+      kind: Deployment
+      name: healthcare-backend
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
+        value: healthcare-global-secret-dev
+  - target:
+      kind: Deployment
+      name: healthcare-frontend
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
+        value: healthcare-global-secret-dev
