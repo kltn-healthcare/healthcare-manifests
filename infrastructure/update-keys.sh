@@ -5,23 +5,46 @@ echo "PLEASE PASTE THE ENTIRE CREDENTIALS BLOCK FROM AWS ACADEMY HERE:"
 echo "(After pasting, press ENTER to go to a new line, then press CTRL + D)"
 echo "====================================================================="
 
-# Read the entire text block pasted by the user
-RAW_CREDS=$(cat)
+# Read the raw multiline input from clipboard/terminal
+RAW_INPUT=$(cat)
 
-# Extract keys using grep and cut, removing spaces and Windows carriage returns (\r)
-ACCESS_KEY_ID=$(echo "$RAW_CREDS" | grep aws_access_key_id | cut -d'=' -f2 | tr -d ' \r ')
-SECRET_ACCESS_KEY=$(echo "$RAW_CREDS" | grep aws_secret_access_key | cut -d'=' -f2 | tr -d ' \r ')
-SESSION_TOKEN=$(echo "$RAW_CREDS" | grep aws_session_token | cut -d'=' -f2 | tr -d ' \r ')
+# Algorithm to stitch wrapped lines together (If a line doesn't contain '=', append to previous line)
+CLEANED_CREDS=""
+while IFS= read -r line; do
+    # Strip carriage returns and leading/trailing whitespaces
+    line=$(echo "$line" | tr -d '\r' | xargs)
+    if [[ "$line" == *=* ]]; then
+        CLEANED_CREDS="$CLEANED_CREDS"$'\n'"$line"
+    else
+        CLEANED_CREDS="$CLEANED_CREDS""$line"
+    fi
+done <<< "$RAW_INPUT"
 
-# Check if all 3 required keys were extracted successfully
+# Extract exact values from the reconstructed text block
+ACCESS_KEY_ID=$(echo "$CLEANED_CREDS" | grep aws_access_key_id | cut -d'=' -f2 | tr -d ' ')
+SECRET_ACCESS_KEY=$(echo "$CLEANED_CREDS" | grep aws_secret_access_key | cut -d'=' -f2 | tr -d ' ')
+SESSION_TOKEN=$(echo "$CLEANED_CREDS" | grep aws_session_token | cut -d'=' -f2 | tr -d ' ')
+
+# Validate if any token component is missing
 if [ -z "$ACCESS_KEY_ID" ] || [ -z "$SECRET_ACCESS_KEY" ] || [ -z "$SESSION_TOKEN" ]; then
-    echo "❌ ERROR: Missing required credentials or incomplete input. Please try again!"
+    echo "❌ ERROR: Failed to parse credentials. Please ensure you copied the entire block."
     exit 1
 fi
 
-echo "=> Creating and applying Secret directly into 'external-secrets' namespace..."
+# Print parsed configuration details for Admin verification
+echo ""
+echo "====================================================================="
+echo "                  PARSED CREDENTIALS VERIFICATION                    "
+echo "====================================================================="
+echo "▶ AWS_ACCESS_KEY_ID     : $ACCESS_KEY_ID (Length: ${#ACCESS_KEY_ID} chars)"
+echo "▶ AWS_SECRET_ACCESS_KEY : $SECRET_ACCESS_KEY (Length: ${#SECRET_ACCESS_KEY} chars)"
+echo "▶ AWS_SESSION_TOKEN     : ${SESSION_TOKEN:0:50}...[TRUNCATED OUTPUT FOR CLEAN VIEW]...${SESSION_TOKEN: -50}"
+echo "  [Total Session Token Length: ${#SESSION_TOKEN} bytes]"
+echo "====================================================================="
+echo ""
 
-# Apply the secret directly to K8s cluster without generating static files
+echo "=> Applying Secret directly into 'external-secrets' namespace..."
+# Update Kubernetes Secret directly
 kubectl create secret generic aws-academy-creds \
   -n external-secrets \
   --from-literal=access-key-id="$ACCESS_KEY_ID" \
@@ -29,10 +52,24 @@ kubectl create secret generic aws-academy-creds \
   --from-literal=session-token="$SESSION_TOKEN" \
   --dry-run=client -o yaml | kubectl apply -f -
 
-echo "=> Restarting External Secrets Operator deployment to apply new keys immediately..."
-# FIXED: Changed deployment name from 'external-secrets' to 'external-secrets-operator'
+echo "=> Restarting External Secrets Operator to catch new credentials..."
 kubectl rollout restart deployment external-secrets-operator -n external-secrets
 
+echo "=> Waiting 15 seconds for the operator to restart and sync with AWS..."
+sleep 15
+
+echo ""
 echo "====================================================================="
-echo " Update successful! System is syncing automatically."
+echo "                     AUTOMATED STATUS CHECK                          "
+echo "====================================================================="
+echo "1. Checking K8s Secret Size:"
+kubectl describe secret aws-academy-creds -n external-secrets | grep -E "access-key-id|secret-access-key|session-token"
+
+echo ""
+echo "2. Checking ClusterSecretStore Infrastructure Status:"
+kubectl get clustersecretstore
+
+echo ""
+echo "3. Checking ExternalSecrets Sync Status Across All Namespaces:"
+kubectl get externalsecrets -A
 echo "====================================================================="
