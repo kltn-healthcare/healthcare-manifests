@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: healthcare-databases
+  namespace: argocd
+  annotations:
+    # Use server-side diff to prevent ArgoCD UI schema validation bugs
+    argocd.argoproj.io/compare-options: ServerSideDiff=true
+spec:
+  project: default
+  source:
+    repoURL: 'http://gitea.kltn.internal/KLTN/healthcare-manifests.git'
+    targetRevision: main
+    # Target path points to the root database directory containing kustomize.yaml
+    path: databases
+  destination:
+    server: 'https://kubernetes.default.svc'
+    # Target namespace where all system databases reside
+    namespace: healthcare-db
+  syncPolicy:
+    automated:
+      prune: true 
+      selfHeal: true 
+    syncOptions:
+      - SkipSchemaValidation=true
