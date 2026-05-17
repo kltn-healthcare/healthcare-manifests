@@ -1,20 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: healthcare-apps-staging
+  name: healthcare-apps-production
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: 'http://gitea.kltn.internal/KLTN/healthcare-manifests.git'
     targetRevision: main 
-    path: apps/overlays/staging 
+    path: apps/overlays/production
   destination:
     server: 'https://kubernetes.default.svc' 
-    namespace: staging 
+    namespace: production
   syncPolicy:
     automated:
       prune: true 
       selfHeal: true 
     syncOptions:
-      - ServerSideApply=true 
+      - SkipSchemaValidation=true
