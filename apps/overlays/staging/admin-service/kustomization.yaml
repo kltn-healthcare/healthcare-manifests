@@ -6,3 +6,12 @@ namespace: staging
 images:
   - name: gitea.kltn.internal:80/kltn/healthcare-admin
     newTag: "57658134"
+
+patches:
+  - target:
+      kind: Deployment
+      name: healthcare-admin
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
+        value: healthcare-global-secret-dev

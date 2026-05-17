@@ -15,3 +15,10 @@ images:
 patches:
   - path: service-patch.yaml
   - path: replica-patch.yaml
+  - target:
+      kind: Deployment
+      name: healthcare-frontend
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
+        value: healthcare-global-secret-dev
