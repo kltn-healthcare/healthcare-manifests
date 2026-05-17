@@ -25,6 +25,20 @@ spec:
             - -c
             - |
               set -e
+              test -n "$DATABASE_URL" || (echo "DATABASE_URL is missing from healthcare-global-secret-dev" && exit 1)
+              cat > prisma.config.ts <<'EOF'
+              import { defineConfig } from 'prisma/config';
+
+              export default defineConfig({
+                schema: 'prisma/schema.prisma',
+                migrations: {
+                  path: 'prisma/migrations',
+                },
+                datasource: {
+                  url: process.env.DATABASE_URL,
+                },
+              });
+              EOF
               npx prisma migrate deploy
               node prisma/seed-admin.js
               if [ "$RUN_DEMO_SEED" = "true" ]; then
