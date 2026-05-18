@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'http://gitea.kltn.internal/KLTN/healthcare-manifests.git'
+    repoURL: 'https://gitea.healthcare.com/KLTN/healthcare-manifests.git'
     targetRevision: main 
     path: apps/overlays/production
   destination:

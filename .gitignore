@@ -9,3 +9,4 @@ Thumbs.db
 jenkins-kubeconfig.conf
 healthcare-frontend/
 /infrastructure/aws-creds-secret.yaml
+/argocd-cert-fixed.yaml
