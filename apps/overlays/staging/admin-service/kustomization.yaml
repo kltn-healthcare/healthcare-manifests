@@ -15,3 +15,4 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
         value: healthcare-global-secret-dev
+
