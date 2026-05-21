@@ -4,5 +4,5 @@ resources:
   - ../../../base/auth-service
 namespace: production
 images:
-  - name: gitea.kltn.internal:80/kltn/healthcare-auth
+  - name: gitea.healthcare.com/KLTN/healthcare-auth
     newTag: "latest"

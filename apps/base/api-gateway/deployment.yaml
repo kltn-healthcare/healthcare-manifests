@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: your-registry/api-gateway:latest
+          image: api-gateway-image/api-gateway:latest
           ports:
             - containerPort: 80

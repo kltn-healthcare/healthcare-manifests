@@ -4,6 +4,6 @@ resources:
   - deployment.yaml
   - service.yaml
 images:
-  - name: gitea.kltn.internal/kltn/healthcare-admin
-    newName: gitea.kltn.internal:80/kltn/healthcare-admin
+  - name: healthcare-admin-image
+    newName: gitea.healthcare.com/KLTN/healthcare-admin
     newTag: latest

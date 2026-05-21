@@ -13,7 +13,7 @@ spec:
         - name: gitea-registry-secret
       containers:
         - name: migrate-seed
-          image: gitea.kltn.internal:80/kltn/healthcare-backend:57658134
+          image: https://gitea.healthcare.com/KLTN/healthcare-backend:57658134
           envFrom:
             - secretRef:
                 name: healthcare-global-secret-dev

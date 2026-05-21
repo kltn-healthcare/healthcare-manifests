@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: healthcare-frontend
-          image: gitea.kltn.internal/kltn/healthcare-frontend:latest
+          image: healthcare-frontend-image:latest
           ports:
             - containerPort: 8080
           envFrom:

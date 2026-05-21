@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: healthcare-admin
-          image: gitea.kltn.internal:80/kltn/healthcare-admin:latest
+          image: healthcare-admin-image:latest
           ports:
             - containerPort: 3002
           envFrom:

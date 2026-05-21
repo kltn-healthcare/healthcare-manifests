@@ -4,6 +4,6 @@ resources:
   - deployment.yaml
   - service.yaml
 images:
-  - name: frontend
-    newName: your-registry/frontend
+  - name: healthcare-frontend-image
+    newName: gitea.healthcare.com/KLTN/healthcare-frontend
     newTag: latest
