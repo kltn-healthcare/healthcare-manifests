@@ -5,5 +5,5 @@ resources:
   - service.yaml
 images:
   - name: api-gateway-image
-    newName: gitea.healthcare.com/KLTN/api-gateway
+    newName: gitea.healthcare.com/kltn/api-gateway
     newTag: latest

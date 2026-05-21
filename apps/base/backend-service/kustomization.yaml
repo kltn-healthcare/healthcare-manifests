@@ -5,5 +5,5 @@ resources:
   - service.yaml
 images:
   - name: healthcare-backend-image
-    newName: gitea.healthcare.com/KLTN/healthcare-backend
+    newName: gitea.healthcare.com/kltn/healthcare-backend
     newTag: latest

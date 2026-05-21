@@ -4,7 +4,7 @@ resources:
   - ../../../base/admin-service
 namespace: staging
 images:
-  - name: gitea.healthcare.com/KLTN/healthcare-admin
+  - name: gitea.healthcare.com/kltn/healthcare-admin
     newTag: "0145e0f5"
 
 patches:

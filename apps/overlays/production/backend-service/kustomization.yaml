@@ -4,5 +4,5 @@ resources:
   - ../../../base/backend-service
 namespace: production
 images:
-  - name: gitea.healthcare.com/KLTN/healthcare-backend
+  - name: gitea.healthcare.com/kltn/healthcare-backend
     newTag: "latest"

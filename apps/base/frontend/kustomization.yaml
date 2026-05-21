@@ -5,5 +5,5 @@ resources:
   - service.yaml
 images:
   - name: healthcare-frontend-image
-    newName: gitea.healthcare.com/KLTN/healthcare-frontend
+    newName: gitea.healthcare.com/kltn/healthcare-frontend
     newTag: latest

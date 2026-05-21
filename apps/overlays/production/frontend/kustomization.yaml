@@ -5,7 +5,7 @@ resources:
 namespace: production
 
 images:
-  - name: gitea.kltn.internal/kltn/healthcare-frontend
+  - name: gitea.healthcare.com/kltn/healthcare-frontend
     newTag: "latest"
 
 patches:
