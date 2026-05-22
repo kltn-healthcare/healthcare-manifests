@@ -5,7 +5,7 @@ resources:
 namespace: staging
 images:
   - name: gitea.healthcare.com/kltn/healthcare-backend
-    newTag: "74f94e0d"
+    newTag: "9fe63d19"
 
 patches:
   - target:
