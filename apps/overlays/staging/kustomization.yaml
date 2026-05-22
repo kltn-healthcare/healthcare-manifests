@@ -6,6 +6,7 @@ resources:
   - auth-service
   - backend-service
   - frontend
+  - http-route.yaml
 
 patches:
   - target:
