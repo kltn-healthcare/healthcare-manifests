@@ -8,7 +8,7 @@ namespace: staging
 
 images:
   - name: gitea.healthcare.com/kltn/healthcare-frontend
-    newTag: "ca2bcba8"
+    newTag: "3c7cc675"
 
 # Apply the patches
 patches:
