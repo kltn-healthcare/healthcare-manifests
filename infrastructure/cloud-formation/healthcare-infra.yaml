@@ -1,0 +1,215 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'UIT Clinic - Enterprise Hybrid Architecture'
+
+Parameters:
+  Environment:
+    Description: "Deployment environment (e.g., dev, staging, prod)"
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, prod]
+
+  SenderEmail:
+    Description: "Sender email address (Gmail)"
+    Type: String
+    
+  AppPassword:
+    Description: "Gmail App Password (16 characters)"
+    Type: String
+    NoEcho: true
+
+Resources:
+  AppointmentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "Appointments-${Environment}"
+      AttributeDefinitions:
+        - AttributeName: appointmentId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: appointmentId
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+  HealthcareImagesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "healthcare-image-storage-${Environment}"
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  CronDailyReminderFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "cron-daily-reminder-${Environment}"
+      Runtime: python3.12
+      Handler: index.lambda_handler
+      Timeout: 30
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
+      
+      Environment:
+        Variables:
+          ENV: !Ref Environment
+          TZ: UTC
+          TABLE_NAME: !Ref AppointmentsTable
+          GMAIL_USER: !Ref SenderEmail
+          GMAIL_PASS: !Ref AppPassword
+          
+      Code:
+        ZipFile: |
+          import json, boto3, smtplib, os
+          from email.mime.text import MIMEText
+          from email.mime.multipart import MIMEMultipart
+          from datetime import datetime, timedelta
+          from boto3.dynamodb.conditions import Attr
+
+          def lambda_handler(event, context):
+              # Retrieve configurations from Environment Variables
+              TABLE_NAME = os.environ['TABLE_NAME']
+              GMAIL_USER = os.environ['GMAIL_USER']
+              GMAIL_PASS = os.environ['GMAIL_PASS']
+              
+              table = boto3.resource('dynamodb').Table(TABLE_NAME)
+              
+              # Get current date in Vietnam time (UTC +7)
+              vn_time = datetime.utcnow() + timedelta(hours=7)
+              today = vn_time.strftime("%Y-%m-%d")
+              
+              # Scan for confirmed appointments for today
+              try:
+                  res = table.scan(FilterExpression=Attr('appointmentDate').eq(today) & Attr('status').eq('CONFIRMED'))
+                  items = res.get('Items', [])
+              except Exception as e:
+                  print(f"Database Error: {e}")
+                  return {'statusCode': 500, 'body': 'Database Error'}
+              
+              count = 0
+              for item in items:
+                  email = item.get('patientEmail')
+                  if email:
+                      p_name = item.get('patientName', 'Khách hàng')
+                      time = item.get('bookingTime', 'Chưa rõ giờ')
+                      clinic = item.get('clinicName', 'Phòng khám')
+                      
+                      # Professional HTML Email Template
+                      html_content = f"""
+                      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #0056b3; border-radius: 8px;">
+                          <div style="background-color: #0056b3; color: white; padding: 20px; text-align: center;">
+                              <h2 style="margin: 0;">NHẮC NHỞ LỊCH KHÁM</h2>
+                          </div>
+                          <div style="padding: 20px; color: #333; line-height: 1.6;">
+                              <p>Chào <b>{p_name}</b>,</p>
+                              <p>Hệ thống nhắc nhở quý khách có lịch hẹn khám tại <b>{clinic}</b> vào hôm nay.</p>
+                              <h3 style="color: #0056b3;">Giờ khám dự kiến: {time}</h3>
+                              <p>Quý khách vui lòng sắp xếp thời gian đến đúng giờ để làm thủ tục.</p>
+                              <p>Trân trọng,<br><b>Đội ngũ {clinic}</b></p>
+                          </div>
+                      </div>
+                      """
+                      msg = MIMEMultipart()
+                      msg['From'], msg['To'], msg['Subject'] = GMAIL_USER, email, f"Nhắc lịch khám hôm nay - {clinic}"
+                      msg.attach(MIMEText(html_content, 'html'))
+                      
+                      # Send Email via SMTP
+                      try:
+                          server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+                          server.login(GMAIL_USER, GMAIL_PASS)
+                          server.sendmail(GMAIL_USER, email, msg.as_string())
+                          server.quit()
+                          count += 1
+                      except Exception as e:
+                          print(f"Mail Error for {email}: {e}")
+                          
+              return {'statusCode': 200, 'body': f'Sent {count} reminders.'}
+
+  DailyReminderRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "trigger-reminders-${Environment}"
+      ScheduleExpression: "cron(0 0 * * ? *)"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt CronDailyReminderFunction.Arn
+          Id: "TargetLambda"
+
+  PermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref CronDailyReminderFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt DailyReminderRule.Arn
+
+  SelfHostSecretsDev:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: "secrets-dev"
+      Description: "Secrets for Development environment"
+      SecretString: '{"status":"Empty. Waiting for CLI upload"}'
+      Tags:
+        - Key: Environment
+          Value: dev
+
+  SelfHostSecretsProd:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: "secrets-prod"
+      Description: "Secrets for Production environment"
+      SecretString: '{"status":"Empty. Waiting for CLI upload"}'
+      Tags:
+        - Key: Environment
+          Value: prod
+
+Outputs:
+  AWSRegion:
+    Description: "AWS Region deployed. Devs need this to construct SDK endpoints."
+    Value: !Ref "AWS::Region"
+    Export:
+      Name: !Sub "ClinicRegion-${Environment}"
+
+  DatabaseName:
+    Description: "DynamoDB Table Name. Devs put this in environment variable (TABLE_NAME)."
+    Value: !Ref AppointmentsTable
+    Export:
+      Name: !Sub "ClinicDBName-${Environment}"
+
+  DatabaseArn:
+    Description: "DynamoDB Table ARN"
+    Value: !GetAtt AppointmentsTable.Arn
+    Export:
+      Name: !Sub "ClinicDBArn-${Environment}"
+
+  S3BucketName:
+    Description: "Name of the S3 Bucket for storage. Devs need this for SDK operations."
+    Value: !Ref HealthcareImagesBucket
+    Export:
+      Name: !Sub "HealthcareImagesBucket-${Environment}"
+
+  S3BucketDomainUrl:
+    Description: "Direct URL Endpoint for S3 Bucket (useful for HTTP uploads/downloads)"
+    Value: !GetAtt HealthcareImagesBucket.RegionalDomainName
+    Export:
+      Name: !Sub "HealthcareImagesBucketUrl-${Environment}"
+
+  S3BucketArn:
+    Value: !GetAtt HealthcareImagesBucket.Arn
+  
+  LambdaFunctionName:
+    Description: "Cron Lambda Function Name"
+    Value: !Ref CronDailyReminderFunction
+
+  DevSecretName:
+    Value: !Ref SelfHostSecretsDev
+
+  ProdSecretName:
+    Value: !Ref SelfHostSecretsProd
