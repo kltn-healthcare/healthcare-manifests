@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: healthcare-db-migrate-seed
+  namespace: production
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: gitea-registry-secret
+      containers:
+        - name: migrate-seed
+          image: gitea.healthcare.com/kltn/healthcare-backend:41709d06
+          envFrom:
+            - secretRef:
+                name: healthcare-global-secret-prod
+          env:
+            - name: RUN_DEMO_SEED
+              value: "false"
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              test -n "$DATABASE_URL" || (echo "DATABASE_URL is missing from healthcare-global-secret-prod" && exit 1)
+              cat > prisma.config.ts <<'EOF'
+              import { defineConfig } from 'prisma/config';
+
+              export default defineConfig({
+                schema: 'prisma/schema.prisma',
+                migrations: {
+                  path: 'prisma/migrations',
+                },
+                datasource: {
+                  url: process.env.DATABASE_URL,
+                },
+              });
+              EOF
+              npx prisma migrate deploy
+              npx tsx prisma/seed.ts
