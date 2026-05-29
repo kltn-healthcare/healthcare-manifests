@@ -13,7 +13,7 @@ spec:
         - name: gitea-registry-secret
       containers:
         - name: migrate-seed
-          image: gitea.healthcare.com/kltn/healthcare-backend:57658134
+          image: gitea.healthcare.com/kltn/healthcare-backend:v1.0.0
           envFrom:
             - secretRef:
                 name: healthcare-global-secret-dev
@@ -40,4 +40,4 @@ spec:
               });
               EOF
               npx prisma migrate deploy
-              npx ts-node prisma/seed.ts
+              npx tsx prisma/seed.ts
