@@ -6,7 +6,7 @@ namespace: production
 
 images:
   - name: gitea.healthcare.com/kltn/healthcare-frontend
-    newTag: "af408864"
+    newTag: "27949a51"
 
 patches:
   - path: service-patch.yaml
