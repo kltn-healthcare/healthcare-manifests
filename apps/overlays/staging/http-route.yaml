@@ -4,6 +4,8 @@ metadata:
   name: healthcare-app-route
   namespace: staging
 spec:
+  hostnames:
+    - "staging.healthcare.com"
   parentRefs:
     - name: eg
       namespace: default

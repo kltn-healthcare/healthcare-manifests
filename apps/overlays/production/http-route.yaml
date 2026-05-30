@@ -4,6 +4,8 @@ metadata:
   name: healthcare-app-route
   namespace: production 
 spec:
+  hostnames:
+    - "healthcare.com"
   parentRefs:
     - name: eg
       namespace: default 
