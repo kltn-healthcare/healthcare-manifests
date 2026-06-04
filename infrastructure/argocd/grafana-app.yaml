@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://grafana-community.github.io/helm-charts"
+    chart: grafana
+    targetRevision: "12.4.2"
+    helm:
+      releaseName: grafana
+      values: |
+        adminUser: admin
+        adminPassword: admin123
+        service:
+          type: LoadBalancer
+          loadBalancerIP: 192.168.10.235
+        persistence:
+          enabled: true
+          size: 10Gi
+          storageClass: longhorn
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - Validate=true
+      - PruneLast=true
+      - Replace=true
