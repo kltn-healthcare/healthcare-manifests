@@ -8,18 +8,60 @@ spec:
   source:
     repoURL: "https://grafana-community.github.io/helm-charts"
     chart: loki
-    targetRevision: "17.1.6"
+    targetRevision: "17.1.1"
     helm:
       releaseName: loki
       values: |
+        deploymentMode: SingleBinary
+
         loki:
           auth_enabled: false
+          commonConfig:
+            replication_factor: 1
+          storage:
+            type: filesystem
+          schemaConfig:
+            configs:
+              - from: "2024-01-01"
+                store: tsdb
+                object_store: filesystem
+                schema: v13
+                index:
+                  prefix: index_
+                  period: 24h
+
         singleBinary:
           replicas: 1
           persistence:
             enabled: true
             size: 10Gi
             storageClass: longhorn
+
+        # Disable all scalable components
+        read:
+          replicas: 0
+        write:
+          replicas: 0
+        backend:
+          replicas: 0
+        ingester:
+          replicas: 0
+        querier:
+          replicas: 0
+        queryFrontend:
+          replicas: 0
+        queryScheduler:
+          replicas: 0
+        distributor:
+          replicas: 0
+        compactor:
+          replicas: 0
+        indexGateway:
+          replicas: 0
+        bloomCompactor:
+          replicas: 0
+        bloomGateway:
+          replicas: 0
   destination:
     server: "https://kubernetes.default.svc"
     namespace: monitoring
@@ -31,4 +73,3 @@ spec:
       - CreateNamespace=true
       - Validate=true
       - PruneLast=true
-      - Replace=true
