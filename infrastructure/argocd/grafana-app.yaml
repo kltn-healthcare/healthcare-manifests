@@ -14,6 +14,13 @@ spec:
       values: |
         adminUser: admin
         adminPassword: admin123
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 300m
+            memory: 256Mi
         service:
           type: LoadBalancer
           loadBalancerIP: 192.168.10.235
@@ -21,6 +28,18 @@ spec:
           enabled: true
           size: 10Gi
           storageClass: longhorn
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+              - name: Prometheus
+                type: prometheus
+                url: http://prometheus-server.monitoring.svc.cluster.local
+                isDefault: true
+              - name: Loki
+                type: loki
+                url: http://loki.monitoring.svc.cluster.local:3100
+                isDefault: false
   destination:
     server: "https://kubernetes.default.svc"
     namespace: monitoring
@@ -29,7 +48,5 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
       - Validate=true
       - PruneLast=true
-      - Replace=true
