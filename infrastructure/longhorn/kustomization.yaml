@@ -19,3 +19,5 @@ helmCharts:
         defaultClassReplicaCount: 1
 resources:
   - namespace.yaml
+patchesStrategicMerge:
+  - longhorn-frontend-service.yaml
