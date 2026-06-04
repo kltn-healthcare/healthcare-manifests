@@ -16,6 +16,6 @@ helmCharts:
         jobEnabled: false
       # Keep other defaults unchanged.
       persistence:
-        defaultClassReplicaCount: 2
+        defaultClassReplicaCount: 1
 resources:
   - namespace.yaml
