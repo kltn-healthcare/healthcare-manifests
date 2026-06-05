@@ -8,15 +8,24 @@ helmCharts:
   - name: longhorn
     repo: https://charts.longhorn.io
     version: 1.11.1
-    # Matches the release name used by 'helm install longhorn'.
-    releaseName: longhorn 
+    releaseName: longhorn
     valuesInline:
+      # Enable ServiceMonitor for Prometheus/Alloy to scrape
+      metrics:
+        serviceMonitor:
+          enabled: true 
       # Disable the pre-upgrade check job to avoid ArgoCD blocking.
       preUpgradeChecker:
         jobEnabled: false
       # Keep other defaults unchanged.
       persistence:
         defaultClassReplicaCount: 1
+
+      backend:
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "9500"
+          prometheus.io/path: "/metrics"
 resources:
   - namespace.yaml
 patchesStrategicMerge:
