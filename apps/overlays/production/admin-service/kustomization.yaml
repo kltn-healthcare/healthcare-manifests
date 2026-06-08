@@ -5,4 +5,4 @@ resources:
 namespace: production
 images:
   - name: gitea.healthcare.com/kltn/healthcare-admin
-    newTag: "27949a51"
+    newTag: "a78d8e8a"
