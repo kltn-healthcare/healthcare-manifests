@@ -12,7 +12,18 @@ spec:
     helm:
       releaseName: alloy
       values: |
+        controller:
+          type: daemonset
+
         alloy:
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            runAsNonRoot: false
+
+          mounts:
+            varlog: true
+
           resources:
             requests:
               cpu: 50m
@@ -20,13 +31,20 @@ spec:
             limits:
               cpu: 200m
               memory: 256Mi
+
           configMap:
             content: |
               discovery.kubernetes "pods" {
                 role = "pod"
               }
+
               discovery.relabel "pods" {
                 targets = discovery.kubernetes.pods.targets
+
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_node_name"]
+                  target_label  = "__host__"
+                }
                 rule {
                   source_labels = ["__meta_kubernetes_namespace"]
                   target_label  = "namespace"
@@ -36,19 +54,27 @@ spec:
                   target_label  = "pod"
                 }
                 rule {
-                  source_labels = ["__meta_kubernetes_container_name"]
+                  source_labels = ["__meta_kubernetes_pod_container_name"]
                   target_label  = "container"
                 }
+                rule {
+                  source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_name"]
+                  separator     = "/"
+                  target_label  = "job"
+                }
               }
+
               loki.source.kubernetes "pods" {
                 targets    = discovery.relabel.pods.output
                 forward_to = [loki.write.default.receiver]
               }
+
               loki.write "default" {
                 endpoint {
                   url = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
                 }
               }
+
   destination:
     server: "https://kubernetes.default.svc"
     namespace: monitoring

@@ -3,18 +3,27 @@ kind: Application
 metadata:
   name: healthcare-apps-staging
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     repoURL: 'https://gitea.healthcare.com/KLTN/healthcare-manifests.git'
-    targetRevision: main 
-    path: apps/overlays/staging 
+    targetRevision: main
+    path: apps/overlays/staging
   destination:
-    server: 'https://kubernetes.default.svc' 
-    namespace: staging 
+    server: 'https://kubernetes.default.svc'
+    namespace: staging
   syncPolicy:
     automated:
-      prune: true 
-      selfHeal: true 
+      prune: true
+      selfHeal: true
     syncOptions:
-      - ServerSideApply=true 
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m

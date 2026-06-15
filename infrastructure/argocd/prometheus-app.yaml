@@ -14,13 +14,14 @@ spec:
       values: |
         server:
           retention: 2d
+          retentionSize: "10GB"
           resources:
             requests:
               cpu: 200m
-              memory: 400Mi
+              memory: 512Mi
             limits:
               cpu: 500m
-              memory: 1Gi
+              memory: 1500Mi 
           persistentVolume:
             enabled: true
             size: 15Gi

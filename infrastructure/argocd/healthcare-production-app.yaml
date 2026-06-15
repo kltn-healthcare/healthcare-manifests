@@ -3,18 +3,27 @@ kind: Application
 metadata:
   name: healthcare-apps-production
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     repoURL: 'https://gitea.healthcare.com/KLTN/healthcare-manifests.git'
-    targetRevision: main 
+    targetRevision: main   
     path: apps/overlays/production
   destination:
-    server: 'https://kubernetes.default.svc' 
+    server: 'https://kubernetes.default.svc'
     namespace: production
   syncPolicy:
     automated:
-      prune: true 
-      selfHeal: true 
+      prune: true
+      selfHeal: true
     syncOptions:
+      - CreateNamespace=true
       - SkipSchemaValidation=true
+    retry:
+      limit: 2
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 5m
