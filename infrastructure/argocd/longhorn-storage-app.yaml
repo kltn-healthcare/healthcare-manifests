@@ -11,6 +11,11 @@ spec:
     path: infrastructure/longhorn
   destination:
     server: 'https://kubernetes.default.svc'
+  ignoreDifferences:
+  - group: ""
+    kind: Service
+    jsonPointers:
+    - /spec/ports/0/nodePort
   syncPolicy:
     automated:
       prune: true
@@ -18,3 +23,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - Replace=true
+      - ServerSideApply=true

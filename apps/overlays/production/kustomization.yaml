@@ -37,3 +37,47 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
         value: healthcare-global-secret-prod
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: healthcare-admin-hpa
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: healthcare-admin-hpa
+      spec:
+        minReplicas: 2
+        maxReplicas: 5
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: healthcare-auth-hpa
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: healthcare-auth-hpa
+      spec:
+        minReplicas: 2
+        maxReplicas: 5
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: healthcare-backend-hpa
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: healthcare-backend-hpa
+      spec:
+        minReplicas: 2
+        maxReplicas: 5
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: healthcare-frontend-hpa
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: healthcare-frontend-hpa
+      spec:
+        minReplicas: 2
+        maxReplicas: 5

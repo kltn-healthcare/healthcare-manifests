@@ -19,7 +19,6 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
       - SkipSchemaValidation=true
     retry:
       limit: 2

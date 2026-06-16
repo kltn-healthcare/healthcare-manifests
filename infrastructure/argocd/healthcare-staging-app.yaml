@@ -20,7 +20,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
+      - SkipSchemaValidation=true
     retry:
       limit: 3
       backoff:

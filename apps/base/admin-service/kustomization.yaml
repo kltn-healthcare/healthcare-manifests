@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - service.yaml
+  - hpa.yaml
 images:
   - name: healthcare-admin-image
     newName: gitea.healthcare.com/kltn/healthcare-admin
