@@ -6,3 +6,17 @@ namespace: production
 images:
   - name: gitea.healthcare.com/kltn/healthcare-backend
     newTag: "v3.0.0"
+patches:
+  - target:
+      kind: Deployment
+      name: healthcare-backend
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi

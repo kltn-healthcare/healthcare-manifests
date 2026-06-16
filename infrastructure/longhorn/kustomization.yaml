@@ -19,8 +19,15 @@ helmCharts:
         jobEnabled: false
       # Keep other defaults unchanged.
       persistence:
-        defaultClassReplicaCount: 1
-
+        defaultClassReplicaCount: 2
+      longhornManager:
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
       backend:
         annotations:
           prometheus.io/scrape: "true"

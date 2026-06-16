@@ -6,3 +6,17 @@ namespace: production
 images:
   - name: gitea.healthcare.com/kltn/healthcare-admin
     newTag: "v3.0.0"
+patches:
+  - target:
+      kind: Deployment
+      name: healthcare-admin
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 300m
+            memory: 256Mi

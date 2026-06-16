@@ -21,3 +21,16 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
         value: healthcare-global-secret-dev
+  - target:
+      kind: Deployment
+      name: healthcare-frontend
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 75m
+            memory: 96Mi
+          limits:
+            cpu: 200m
+            memory: 192Mi
