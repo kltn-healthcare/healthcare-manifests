@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: healthcare-auth
+  name: healthcare-identity
   labels:
-    app: healthcare-auth
+    app: healthcare-identity
 spec:
   selector:
-    app: healthcare-auth
+    app: healthcare-identity
   ports:
     - name: http
       port: 80

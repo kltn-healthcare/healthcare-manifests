@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: healthcare-auth
+  name: healthcare-identity
   labels:
-    app: healthcare-auth
+    app: healthcare-identity
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: healthcare-auth
+      app: healthcare-identity
   template:
     metadata:
       labels:
-        app: healthcare-auth
+        app: healthcare-identity
     spec:
       containers:
-        - name: auth-service
-          image: healthcare-auth-image:latest
+        - name: healthcare-identity
+          image: healthcare-identity-image:latest
           resources:
             requests:
               cpu: 100m

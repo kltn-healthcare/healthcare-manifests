@@ -1,12 +1,12 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: healthcare-auth-hpa
+  name: healthcare-identity-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: healthcare-auth
+    name: healthcare-identity
   minReplicas: 1
   maxReplicas: 3
   metrics:

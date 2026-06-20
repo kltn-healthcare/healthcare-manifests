@@ -5,6 +5,6 @@ resources:
   - service.yaml
   - hpa.yaml
 images:
-  - name: healthcare-auth-image
-    newName: gitea.healthcare.com/kltn/healthcare-auth
+  - name: healthcare-identity-image
+    newName: gitea.healthcare.com/kltn/healthcare-identity
     newTag: latest

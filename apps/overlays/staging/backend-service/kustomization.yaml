@@ -4,20 +4,20 @@ resources:
   - ../../../base/backend-service
 namespace: staging
 images:
-  - name: gitea.healthcare.com/kltn/healthcare-backend
+  - name: gitea.healthcare.com/kltn/healthcare-appointment
     newTag: "c35131e5"
 
 patches:
   - target:
       kind: Deployment
-      name: healthcare-backend
+      name: healthcare-appointment
     patch: |-
       - op: replace
         path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
         value: healthcare-global-secret-dev
   - target:
       kind: Deployment
-      name: healthcare-backend
+      name: healthcare-appointment
     patch: |-
       - op: replace
         path: /spec/template/spec/containers/0/resources

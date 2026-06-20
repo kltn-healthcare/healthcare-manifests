@@ -4,12 +4,12 @@ resources:
   - ../../../base/auth-service
 namespace: production
 images:
-  - name: gitea.healthcare.com/kltn/healthcare-auth
+  - name: gitea.healthcare.com/kltn/healthcare-identity
     newTag: "v3.0.0"
 patches:
   - target:
       kind: Deployment
-      name: healthcare-auth
+      name: healthcare-identity
     patch: |-
       - op: replace
         path: /spec/template/spec/containers/0/resources

@@ -4,20 +4,20 @@ resources:
   - ../../../base/auth-service
 namespace: staging
 images:
-  - name: gitea.healthcare.com/kltn/healthcare-auth
+  - name: gitea.healthcare.com/kltn/healthcare-identity
     newTag: "c35131e5"
 
 patches:
   - target:
       kind: Deployment
-      name: healthcare-auth
+      name: healthcare-identity
     patch: |-
       - op: replace
         path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
         value: healthcare-global-secret-dev
   - target:
       kind: Deployment
-      name: healthcare-auth
+      name: healthcare-identity
     patch: |-
       - op: replace
         path: /spec/template/spec/containers/0/resources

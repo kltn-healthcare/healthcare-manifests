@@ -1,12 +1,12 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: healthcare-backend-hpa
+  name: healthcare-appointment-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: healthcare-backend
+    name: healthcare-appointment
   minReplicas: 1
   maxReplicas: 3
   metrics:

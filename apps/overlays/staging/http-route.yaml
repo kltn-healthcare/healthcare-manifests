@@ -17,7 +17,7 @@ spec:
             type: PathPrefix
             value: /docs
       backendRefs:
-        - name: healthcare-backend
+        - name: healthcare-appointment
           port: 80
     - matches:
         - path:
@@ -30,7 +30,7 @@ spec:
               type: ReplacePrefixMatch
               replacePrefixMatch: /v1/auth
       backendRefs:
-        - name: healthcare-auth
+        - name: healthcare-identity
           port: 80
     - matches:
         - path:
@@ -69,7 +69,7 @@ spec:
               type: ReplacePrefixMatch
               replacePrefixMatch: /v1
       backendRefs:
-        - name: healthcare-backend
+        - name: healthcare-appointment
           port: 80
     - matches:
         - path:

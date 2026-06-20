@@ -1,20 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: healthcare-backend
+  name: healthcare-appointment
+  labels:
+    app: healthcare-appointment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: healthcare-backend
+      app: healthcare-appointment
   template:
     metadata:
       labels:
-        app: healthcare-backend
+        app: healthcare-appointment
     spec:
       containers:
-        - name: healthcare-backend
-          image: healthcare-backend-image:latest
+        - name: healthcare-appointment
+          image: healthcare-appointment-image:latest
           resources:
             requests:
               cpu: 200m

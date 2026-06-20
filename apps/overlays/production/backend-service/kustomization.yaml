@@ -4,12 +4,12 @@ resources:
   - ../../../base/backend-service
 namespace: production
 images:
-  - name: gitea.healthcare.com/kltn/healthcare-backend
+  - name: gitea.healthcare.com/kltn/healthcare-appointment
     newTag: "v3.0.0"
 patches:
   - target:
       kind: Deployment
-      name: healthcare-backend
+      name: healthcare-appointment
     patch: |-
       - op: replace
         path: /spec/template/spec/containers/0/resources
