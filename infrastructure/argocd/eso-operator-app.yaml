@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: 'https://charts.external-secrets.io'
     chart: external-secrets
-    targetRevision: 2.5.0 # Updated to match the latest v2 version
+    targetRevision: 2.4.1
     helm:
       parameters:
         - name: installCRDs
