@@ -11,15 +11,15 @@ spec:
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: clinic-db-secret
+                  name: identity-db-secret
                   key: POSTGRES_DB
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: clinic-db-secret
+                  name: identity-db-secret
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: clinic-db-secret
+                  name: identity-db-secret
                   key: POSTGRES_PASSWORD
