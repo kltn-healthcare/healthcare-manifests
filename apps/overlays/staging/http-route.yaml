@@ -35,6 +35,45 @@ spec:
     - matches:
         - path:
             type: PathPrefix
+            value: /api/v1/doctor-admin/bookings
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/doctor-admin/bookings
+      backendRefs:
+        - name: healthcare-appointment
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/clinic-admin/bookings
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/clinic-admin/bookings
+      backendRefs:
+        - name: healthcare-appointment
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/clinic-admin
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/clinic-admin
+      backendRefs:
+        - name: healthcare-admin
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
             value: /api/v1/doctor-admin
       filters:
         - type: URLRewrite
@@ -48,6 +87,32 @@ spec:
     - matches:
         - path:
             type: PathPrefix
+            value: /api/v1/notifications
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/notifications
+      backendRefs:
+        - name: healthcare-identity
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/admin/users
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/admin/users
+      backendRefs:
+        - name: healthcare-identity
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
             value: /api/v1/admin
       filters:
         - type: URLRewrite
@@ -55,6 +120,84 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /v1/admin
+      backendRefs:
+        - name: healthcare-admin
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/users
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/users
+      backendRefs:
+        - name: healthcare-identity
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/specialties
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/specialties
+      backendRefs:
+        - name: healthcare-admin
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/clinics
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/clinics
+      backendRefs:
+        - name: healthcare-admin
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/doctors
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/doctors
+      backendRefs:
+        - name: healthcare-admin
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/packages
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/packages
+      backendRefs:
+        - name: healthcare-admin
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/articles
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/articles
       backendRefs:
         - name: healthcare-admin
           port: 80

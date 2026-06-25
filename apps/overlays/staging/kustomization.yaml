@@ -3,8 +3,8 @@ kind: Kustomization
 resources:
   - global-externalsecret.yaml
   - admin-service
-  - auth-service
-  - backend-service
+  - identity-service
+  - appointment-service
   - frontend
   - http-route.yaml
 
