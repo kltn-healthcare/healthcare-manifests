@@ -1,7 +1,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: healthcare-app-route
+  name: healthcare-admin-route
   namespace: staging
 spec:
   hostnames:
@@ -15,105 +15,104 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /docs
-      backendRefs:
-        - name: healthcare-appointment
-          port: 80
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /api/auth
+            value: /api/v1/clinic-admin
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /v1/auth
+              replacePrefixMatch: /v1/clinic-admin
       backendRefs:
-        - name: healthcare-identity
+        - name: healthcare-admin
           port: 80
     - matches:
         - path:
             type: PathPrefix
-            value: /api/v1/doctor-admin/bookings
+            value: /api/v1/doctor-admin
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /v1/doctor-admin/bookings
+              replacePrefixMatch: /v1/doctor-admin
       backendRefs:
-        - name: healthcare-appointment
+        - name: healthcare-admin
           port: 80
     - matches:
         - path:
             type: PathPrefix
-            value: /api/v1/clinic-admin/bookings
+            value: /api/v1/admin
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /v1/clinic-admin/bookings
+              replacePrefixMatch: /v1/admin
       backendRefs:
-        - name: healthcare-appointment
+        - name: healthcare-admin
           port: 80
     - matches:
         - path:
             type: PathPrefix
-            value: /api/v1/notifications
+            value: /api/v1/specialties
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /v1/notifications
+              replacePrefixMatch: /v1/specialties
       backendRefs:
-        - name: healthcare-identity
+        - name: healthcare-admin
           port: 80
     - matches:
         - path:
             type: PathPrefix
-            value: /api/v1/admin/users
+            value: /api/v1/clinics
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /v1/admin/users
+              replacePrefixMatch: /v1/clinics
       backendRefs:
-        - name: healthcare-identity
+        - name: healthcare-admin
           port: 80
     - matches:
         - path:
             type: PathPrefix
-            value: /api/v1/users
+            value: /api/v1/doctors
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /v1/users
+              replacePrefixMatch: /v1/doctors
       backendRefs:
-        - name: healthcare-identity
+        - name: healthcare-admin
           port: 80
     - matches:
         - path:
             type: PathPrefix
-            value: /api/v1
+            value: /api/v1/packages
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /v1
+              replacePrefixMatch: /v1/packages
       backendRefs:
-        - name: healthcare-appointment
+        - name: healthcare-admin
           port: 80
     - matches:
         - path:
             type: PathPrefix
-            value: /
+            value: /api/v1/articles
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /v1/articles
       backendRefs:
-        - name: healthcare-frontend
+        - name: healthcare-admin
           port: 80
