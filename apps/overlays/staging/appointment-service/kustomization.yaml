@@ -5,7 +5,7 @@ resources:
 namespace: staging
 images:
   - name: gitea.healthcare.com/kltn/healthcare-appointment
-    newTag: "1d6320c2"
+    newTag: "d613fae8"
 
 patches:
   - target:
