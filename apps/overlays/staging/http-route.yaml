@@ -32,32 +32,7 @@ spec:
       backendRefs:
         - name: healthcare-identity
           port: 80
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /api/v1/doctor-admin/bookings
-      filters:
-        - type: URLRewrite
-          urlRewrite:
-            path:
-              type: ReplacePrefixMatch
-              replacePrefixMatch: /v1/doctor-admin/bookings
-      backendRefs:
-        - name: healthcare-appointment
-          port: 80
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /api/v1/clinic-admin/bookings
-      filters:
-        - type: URLRewrite
-          urlRewrite:
-            path:
-              type: ReplacePrefixMatch
-              replacePrefixMatch: /v1/clinic-admin/bookings
-      backendRefs:
-        - name: healthcare-appointment
-          port: 80
+
     - matches:
         - path:
             type: PathPrefix
