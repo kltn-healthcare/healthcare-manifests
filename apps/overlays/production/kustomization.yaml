@@ -19,6 +19,14 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
         value: healthcare-global-secret-prod
+      - op: add
+        path: /spec/template/spec/containers/0/env
+        value:
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: healthcare-global-secret-prod
+                key: DATABASE_URL_IDENTITY
   - target:
       kind: Deployment
       name: healthcare-appointment
@@ -26,6 +34,14 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
         value: healthcare-global-secret-prod
+      - op: add
+        path: /spec/template/spec/containers/0/env
+        value:
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: healthcare-global-secret-prod
+                key: DATABASE_URL_APPOINTMENT
   - target:
       kind: Deployment
       name: healthcare-admin
@@ -33,6 +49,15 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
         value: healthcare-global-secret-prod
+      - op: add
+        path: /spec/template/spec/containers/0/env
+        value:
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: healthcare-global-secret-prod
+                key: DATABASE_URL_ADMIN
+
   - target:
       kind: Deployment
       name: healthcare-frontend
