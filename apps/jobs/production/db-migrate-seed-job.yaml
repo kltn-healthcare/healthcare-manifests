@@ -13,7 +13,7 @@ spec:
         - name: gitea-registry-secret
       containers:
         - name: migrate-seed
-          image: gitea.healthcare.com/kltn/healthcare-appointment:41709d06
+          image: gitea.healthcare.com/kltn/healthcare-appointment:v5.0.1
           envFrom:
             - secretRef:
                 name: healthcare-global-secret-prod
@@ -25,19 +25,18 @@ spec:
             - -c
             - |
               set -e
-              test -n "$DATABASE_URL" || (echo "DATABASE_URL is missing from healthcare-global-secret-prod" && exit 1)
-              cat > prisma.config.ts <<'EOF'
-              import { defineConfig } from 'prisma/config';
+              test -n "$DATABASE_URL_IDENTITY" || (echo "DATABASE_URL_IDENTITY is missing from healthcare-global-secret-prod" && exit 1)
+              test -n "$DATABASE_URL_ADMIN" || (echo "DATABASE_URL_ADMIN is missing from healthcare-global-secret-prod" && exit 1)
+              test -n "$DATABASE_URL_APPOINTMENT" || (echo "DATABASE_URL_APPOINTMENT is missing from healthcare-global-secret-prod" && exit 1)
 
-              export default defineConfig({
-                schema: 'prisma/schema.prisma',
-                migrations: {
-                  path: 'prisma/migrations',
-                },
-                datasource: {
-                  url: process.env.DATABASE_URL,
-                },
-              });
-              EOF
-              npx prisma migrate deploy
+              echo "Pushing Identity database schema..."
+              PRISMA_SCHEMA_PATH="apps/identity/prisma/schema.prisma" DATABASE_URL="$DATABASE_URL_IDENTITY" npx prisma db push --accept-data-loss
+
+              echo "Pushing Admin database schema..."
+              PRISMA_SCHEMA_PATH="apps/admin/prisma/schema.prisma" DATABASE_URL="$DATABASE_URL_ADMIN" npx prisma db push --accept-data-loss
+
+              echo "Pushing Appointment database schema..."
+              PRISMA_SCHEMA_PATH="apps/appointment/prisma/schema.prisma" DATABASE_URL="$DATABASE_URL_APPOINTMENT" npx prisma db push --accept-data-loss
+
+              echo "Seeding databases..."
               npx tsx prisma/seed.ts
