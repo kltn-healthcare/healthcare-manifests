@@ -7,6 +7,9 @@ resources:
   - appointment-service
   - frontend
   - http-route.yaml
+  - ../../../databases/overlays/identity-db
+  - ../../../databases/overlays/admin-db
+  - ../../../databases/overlays/appointment-db
 
 patches:
   - target:
