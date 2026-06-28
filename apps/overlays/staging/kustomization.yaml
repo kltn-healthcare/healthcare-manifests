@@ -28,6 +28,12 @@ patches:
               secretKeyRef:
                 name: healthcare-global-secret-dev
                 key: DATABASE_URL_IDENTITY
+          - name: IDENTITY_SERVICE_URL
+            value: "http://healthcare-identity"
+          - name: ADMIN_SERVICE_URL
+            value: "http://healthcare-admin"
+          - name: APPOINTMENT_SERVICE_URL
+            value: "http://healthcare-appointment"
   - target:
       kind: Deployment
       name: healthcare-appointment
@@ -43,6 +49,12 @@ patches:
               secretKeyRef:
                 name: healthcare-global-secret-dev
                 key: DATABASE_URL_APPOINTMENT
+          - name: IDENTITY_SERVICE_URL
+            value: "http://healthcare-identity"
+          - name: ADMIN_SERVICE_URL
+            value: "http://healthcare-admin"
+          - name: APPOINTMENT_SERVICE_URL
+            value: "http://healthcare-appointment"
   - target:
       kind: Deployment
       name: healthcare-admin
@@ -58,6 +70,12 @@ patches:
               secretKeyRef:
                 name: healthcare-global-secret-dev
                 key: DATABASE_URL_ADMIN
+          - name: IDENTITY_SERVICE_URL
+            value: "http://healthcare-identity"
+          - name: ADMIN_SERVICE_URL
+            value: "http://healthcare-admin"
+          - name: APPOINTMENT_SERVICE_URL
+            value: "http://healthcare-appointment"
   - target:
       kind: Deployment
       name: healthcare-frontend

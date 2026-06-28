@@ -46,6 +46,8 @@ patches:
             value: "http://healthcare-identity"
           - name: ADMIN_SERVICE_URL
             value: "http://healthcare-admin"
+          - name: APPOINTMENT_SERVICE_URL
+            value: "http://healthcare-appointment"
   - target:
       kind: Deployment
       name: healthcare-admin
@@ -65,6 +67,8 @@ patches:
             value: "http://healthcare-identity"
           - name: ADMIN_SERVICE_URL
             value: "http://healthcare-admin"
+          - name: APPOINTMENT_SERVICE_URL
+            value: "http://healthcare-appointment"
 
   - target:
       kind: Deployment
