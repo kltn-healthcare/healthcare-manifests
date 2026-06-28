@@ -5,7 +5,7 @@ resources:
 namespace: production
 images:
   - name: gitea.healthcare.com/kltn/healthcare-admin
-    newTag: "v5.0.1"
+    newTag: "v5.0.2"
 patches:
   - target:
       kind: Deployment
